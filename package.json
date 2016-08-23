@@ -1,0 +1,22 @@
+{
+  "name": "wac-nginx",
+  "version": "0.0.0",
+  "description": "A docker minecraft server container",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chad-autry/wac-nginx.git"
+  },
+  "keywords": [
+    "Docker",
+    "Nginx"
+  ],
+  "author": {
+    "name": "Chad Autry",
+    "url": "http://chad-autry.github.io/"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chad-autry/wac-nginx/issues"
+  },
+  "homepage": "https://github.com/chad-autry/wac-nginx"
+}
