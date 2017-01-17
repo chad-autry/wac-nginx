@@ -46,6 +46,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		--with-mail_ssl_module \
 		--with-file-aio \
 		--with-http_v2_module \
+		--with-tcp_proxy_module \
 		--with-ipv6 \
 	" \
 	&& addgroup -S nginx \
