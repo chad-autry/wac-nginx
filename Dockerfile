@@ -3,6 +3,11 @@ FROM alpine:3.7
 LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 
 ENV NGINX_VERSION 1.12.2
+ENV DEVEL_KIT_MODULE_VERSION 0.3.0
+ENV LUA_MODULE_VERSION 0.10.11
+
+ENV LUAJIT_LIB=/usr/lib
+ENV LUAJIT_INC=/usr/include/luajit-2.0
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
@@ -50,6 +55,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		--with-file-aio \
 		--with-http_v2_module \
 		--with-ipv6 \
+		--add-module=/usr/src/ngx_devel_kit-$DEVEL_KIT_MODULE_VERSION \
+ 		--add-module=/usr/src/lua-nginx-module-$LUA_MODULE_VERSION \
 	" \
 	&& addgroup -S nginx \
 	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
@@ -66,6 +73,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		libxslt-dev \
 		gd-dev \
 		geoip-dev \
+		luajit-dev \
 	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
 	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
 	&& export GNUPGHOME="$(mktemp -d)" \
@@ -84,8 +92,12 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& rm -rf "$GNUPGHOME" nginx.tar.gz.asc \
 	&& mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
-	&& rm nginx.tar.gz \
+	&& tar -zxC /usr/src -f ndk.tar.gz \
+	&& tar -zxC /usr/src -f lua.tar.gz \
+	&& rm nginx.tar.gz ndk.tar.gz lua.tar.gz \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
+	&& curl -fSL https://github.com/simpl/ngx_devel_kit/archive/v$DEVEL_KIT_MODULE_VERSION.tar.gz -o ndk.tar.gz \
+	&& curl -fSL https://github.com/openresty/lua-nginx-module/archive/v$LUA_MODULE_VERSION.tar.gz -o lua.tar.gz
 	&& ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
