@@ -79,6 +79,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
 	&& curl -fSL https://github.com/simpl/ngx_devel_kit/archive/v$DEVEL_KIT_MODULE_VERSION.tar.gz -o ndk.tar.gz \
 	&& curl -fSL https://github.com/openresty/lua-nginx-module/archive/v$LUA_MODULE_VERSION.tar.gz -o lua.tar.gz \
+	&& curl -fSL https://github.com/knyar/nginx-lua-prometheus/archive/0.1-20170610.tar.gz -o nginx-lua-prometheus.tar.gz \
 	&& export GNUPGHOME="$(mktemp -d)" \
 	&& found=''; \
 	for server in \
@@ -97,7 +98,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& tar -zxC /usr/src -f ndk.tar.gz \
 	&& tar -zxC /usr/src -f lua.tar.gz \
-	&& rm nginx.tar.gz ndk.tar.gz lua.tar.gz \
+	&& tar -zxC /usr/src -f nginx-lua-prometheus.tar.gz \
+	&& rm nginx.tar.gz ndk.tar.gz lua.tar.gz nginx-lua-prometheus.tar.gz \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
@@ -123,6 +125,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& strip /usr/sbin/nginx* \
 	&& strip /usr/lib/nginx/modules/*.so \
 	&& rm -rf /usr/src/nginx-$NGINX_VERSION \
+	&& mv /usr/src/nginx-lua-prometheus-0.1-20170610/prometheus.lua /etc/nginx \
+	&& rm -rf /usr/src/nginx-lua-prometheus-0.1-20170610 \
 	\
 	# Bring in gettext so we can get `envsubst`, then throw
 	# the rest away. To do this, we need to install `gettext`
