@@ -2,16 +2,17 @@
 sudo: required
 services:
 - docker
-# Could probablly switch to generic, since node isn't used 
 language: node_js
 node_js:
-- '0.10'
+- 'node'
 env:
   global:
+  - PROJECT: wac-nginx
   - GH_REF: github.com/chad-autry/wac-nginx
+
 script:
-- docker build -t chadautry/wac-nginx:latest .
-- if [[ ! -z "$TRAVIS_TAG" ]]; then docker tag chadautry/wac-nginx:latest chadautry/wac-nginx:$TRAVIS_TAG ; fi
+- docker build -t chadautry/$PROJECT:latest .
+- if [[ ! -z "$TRAVIS_TAG" ]]; then docker tag chadautry/$PROJECT:latest chadautry/$PROJECT:$TRAVIS_TAG ; fi
 after_success:
-- docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-- docker push chadautry/wac-nginx
+- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+- docker push chadautry/$PROJECT
